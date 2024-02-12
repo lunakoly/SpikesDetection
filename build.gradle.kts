@@ -14,3 +14,13 @@ dependencies {
     implementation(project(":arrrgh"))
     testImplementation(libs.kotlin.test.junit)
 }
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = application.mainClass
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(
+        configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+    )
+}
