@@ -11,5 +11,6 @@ application {
 }
 
 dependencies {
+    implementation(project(":arrrgh"))
     testImplementation(libs.kotlin.test.junit)
 }
