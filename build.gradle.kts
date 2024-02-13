@@ -11,6 +11,9 @@ application {
 }
 
 dependencies {
+    implementation(libs.kandy)
+    runtimeOnly(libs.slf4j.nop)
+
     implementation(project(":arrrgh"))
     testImplementation(libs.kotlin.test.junit)
 }

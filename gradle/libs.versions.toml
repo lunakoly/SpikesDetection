@@ -2,10 +2,17 @@
 junit = "4.13.2"
 kotlin = "1.9.22"
 
+kandy = "0.5.0"
+# Otherwise I get useless warnigns in stdout
+slf4j-nop = "2.0.12"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+kandy = { module = "org.jetbrains.kotlinx:kandy-lets-plot", version.ref = "kandy" }
+slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
