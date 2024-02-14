@@ -10,8 +10,9 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class MedianFitting(
-    private val median: Double,
+class LinearFitting(
+    private val medianLineA: Double,
+    private val medianLineB: Double,
     deviation: Double,
     private val points: List<Point>,
 ) : Fitting(deviation) {
@@ -22,40 +23,49 @@ class MedianFitting(
     ) {
         visualizeLine(points, graphColor)
         val pointsX = points.map { it.x }
+        val pointsY = List(pointsX.size) { medianAt(pointsX[it]) }
 
         line {
             x(pointsX)
-            y(List(pointsX.size) { median })
+            y(pointsY)
             color = medianColor
         }
 
         line {
             x(pointsX)
-            y(List(pointsX.size) { median + deviation })
+            y(pointsY.map { it + deviation })
             color = deviationColor
         }
 
         line {
             x(pointsX)
-            y(List(pointsX.size) { median - deviation })
+            y(pointsY.map { it - deviation })
             color = deviationColor
         }
     }
 
-    override fun extractSpikes() = points.filter { abs(it.y - median) > deviation }
+    override fun extractSpikes() = points.filter { (x, y) -> abs(y - medianAt(x)) > deviation }
+
+    private fun LinearFitting.medianAt(x: Double) = medianLineA + medianLineB * x
 }
 
-fun List<Point>.fitMedian(): MedianFitting {
+fun List<Point>.fitLinear(): LinearFitting {
     require(size >= 3) { "The list contains too few points" }
 
+    // Source:
+    // https://statproofbook.github.io/P/slr-ols.html
+
     val median = median()
+    val medianLineB = sumOf { (it.x - median.x) * (it.y - median.y) } / sumOf { (it.x - median.x).pow(2) }
+    val medianLineA = median.y - medianLineB * median.x
+
     // The following code attempts to treat a sample from a truncated normal distribution
     // as a normal distribution, thus using the usual formula for the sample
     // standard deviation. This is also why the coefficient is 12 instead of "3 sigma".
     // This was chosen just because it was simple and kinda seemed to work.
-    val sortedSquaredDeviations = map { (_, y) -> (y - median.y).pow(2.0) }.sorted()
+    val sortedSquaredDeviations = map { (x, y) -> (y - medianLineA - medianLineB * x).pow(2.0) }.sorted()
     val usefulDeviations = sortedSquaredDeviations.subList(0, sortedSquaredDeviations.size / 2)
     val deviation = sqrt(usefulDeviations.sum() / (usefulDeviations.size - 1))
 
-    return MedianFitting(median.y, deviation * 12, this)
+    return LinearFitting(medianLineA, medianLineB, deviation * 12, this)
 }

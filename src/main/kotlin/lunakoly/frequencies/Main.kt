@@ -2,12 +2,9 @@ package lunakoly.frequencies
 
 import lunakoly.arrrgh.fillFrom
 import lunakoly.frequencies.RandomColorProvider.Companion.DIAMETER_STEP_ANGLE
-import lunakoly.frequencies.data.parseDataFile
-import lunakoly.frequencies.data.visualizeLine
-import lunakoly.frequencies.data.visualizePoints
-import lunakoly.frequencies.filtering.extractSpikes
-import lunakoly.frequencies.filtering.fitMedianBySegmentsDynamically
-import lunakoly.frequencies.filtering.visualizeFittings
+import lunakoly.frequencies.data.*
+import lunakoly.frequencies.filtering.*
+import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.save
 import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
@@ -21,6 +18,12 @@ fun main(args: Array<String>) {
     if (!File(options.outputFile).isDirectory) {
         println("Error > Output file must be a directory > ${options.outputFile} is not")
         return
+    }
+
+    val fitting = when (options.fitting) {
+        "median" -> List<Point>::fitMedian
+        "linear" -> List<Point>::fitLinear
+        else -> return println("Error > `${options.fitting}` is not a supported fitting method")
     }
 
     val inputData = options.inputFiles.map(::File)
@@ -45,17 +48,24 @@ fun main(args: Array<String>) {
         filesIndices[file.name] = nextIndex
 
         println("=> Analysing graph ${file.path}")
-        val colorProvider = RandomColorProvider(3.0 / 5 * DIAMETER_STEP_ANGLE)
 
         plot {
-            visualizeLine(data.points, colorProvider.nextColor())
-            val fitting = data.points.fitMedianBySegmentsDynamically()
-            visualizeFittings(fitting, colorProvider.nextColor(), colorProvider.nextColor(), colorProvider.nextColor())
-            val spikes = fitting.extractSpikes()
-            visualizePoints(spikes, colorProvider.nextColor())
+            fitAndVisualize(data, fitting)
             layout.size = 1920 to 1080
         }.save(options.outputFile / file.name + "$suffix.png")
     }
 
     println("Done!")
+}
+
+inline fun <F : Fitting> DataFramePlotContext<*>.fitAndVisualize(
+    data: DataFile,
+    fit: (List<Point>) -> F,
+) {
+    val colorProvider = RandomColorProvider(3.0 / 5 * DIAMETER_STEP_ANGLE)
+    visualizeLine(data.points, colorProvider.nextColor())
+    val fitting = data.points.fitBySegmentsDynamically(fit = fit)
+    visualize(fitting, colorProvider.nextColor(), colorProvider.nextColor(), colorProvider.nextColor())
+    val spikes = fitting.extractSpikes()
+    visualizePoints(spikes, colorProvider.nextColor())
 }
