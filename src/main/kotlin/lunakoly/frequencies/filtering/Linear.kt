@@ -56,7 +56,9 @@ fun List<Point>.fitLinear(): LinearFitting {
     // https://statproofbook.github.io/P/slr-ols.html
 
     val median = median()
-    val medianLineB = sumOf { (it.x - median.x) * (it.y - median.y) } / sumOf { (it.x - median.x).pow(2) }
+    val sortedAbsoluteDeviations = map { (x, y) -> Point(x - median.x, y - median.y) }.sortedBy { abs(it.y) }
+    val usefulAbsoluteDeviations = sortedAbsoluteDeviations.subList(0, sortedAbsoluteDeviations.size / 2)
+    val medianLineB = usefulAbsoluteDeviations.sumOf { it.x * it.y } / usefulAbsoluteDeviations.sumOf { it.x * it.x }
     val medianLineA = median.y - medianLineB * median.x
 
     // The following code attempts to treat a sample from a truncated normal distribution
