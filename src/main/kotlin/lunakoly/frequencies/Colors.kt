@@ -36,9 +36,12 @@ private fun hsl(h: Double, s: Double = 1.0, l: Double = 0.5): Color {
     return hslToRgb(h, s, l).let { (r, g, b) -> Color.rgb(r, g, b) }
 }
 
-class RandomColorProvider {
-    private var index = 0
-    private val diameterStepAngle = 2 / PI * 180
+class RandomColorProvider(private val stepAngle: Double = DIAMETER_STEP_ANGLE) {
+    companion object {
+        const val DIAMETER_STEP_ANGLE = 2 / PI * 180
+    }
 
-    fun nextColor() = hsl((diameterStepAngle * index++).mod(360.0))
+    private var index = 0
+
+    fun nextColor() = hsl((stepAngle * index++).mod(360.0))
 }
