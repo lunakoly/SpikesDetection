@@ -63,11 +63,11 @@ fun List<Point>.fitLinear(): LinearFitting {
 
     // The following code attempts to treat a sample from a truncated normal distribution
     // as a normal distribution, thus using the usual formula for the sample
-    // standard deviation. This is also why the coefficient is 12 instead of "3 sigma".
+    // standard deviation. This is also why the coefficient is 16 instead of "3 sigma".
     // This was chosen just because it was simple and kinda seemed to work.
     val sortedSquaredDeviations = map { (x, y) -> (y - medianLineA - medianLineB * x).pow(2.0) }.sorted()
     val usefulDeviations = sortedSquaredDeviations.subList(0, sortedSquaredDeviations.size / 2)
     val deviation = sqrt(usefulDeviations.sum() / (usefulDeviations.size - 1))
 
-    return LinearFitting(medianLineA, medianLineB, deviation * 12, this)
+    return LinearFitting(medianLineA, medianLineB, deviation * 16, this)
 }
