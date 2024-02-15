@@ -30,6 +30,12 @@ fun List<Point>.buildNoiseGraph(
 }
 
 fun List<Point>.calculateSigmaViaBinarySearchDeviation(medianFitting: MedianFitting, scalar: Double = 4.0): Double {
+    // Originally this algorithm was supposed to be used to estimate std of
+    // a truncated normal distribution received by throwing away the 50%
+    // of the largest deviation points from the sample, thus making the
+    // usual formula incorrect, but it turns out this algorithm performs
+    // good even in the presence of spikes!
+
     val noise = buildNoiseGraph(medianFitting)
     val maximum = noise.maxOf { it.y }
     var sigmaUpperBound = maximum
