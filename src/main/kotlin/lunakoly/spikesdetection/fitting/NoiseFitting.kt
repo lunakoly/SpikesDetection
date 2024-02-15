@@ -42,9 +42,16 @@ class NoiseFitting(
     }
 }
 
-fun NoiseFitting.extractSpikes() = points.filter { (x, y) -> abs(y - medianFitting.medianAt(x)) > deviation }
+fun NoiseFitting.extractSpikes(shift: Boolean = false): List<Point> {
+    val filtered = points.filter { (x, y) -> abs(y - medianFitting.medianAt(x)) > deviation }
 
-fun List<NoiseFitting>.extractSpikes(): List<Point> = flatMap { it.extractSpikes() }
+    return when {
+        shift -> filtered.map { (x, y) -> Point(x, y - medianFitting.medianAt(x)) }
+        else -> filtered
+    }
+}
+
+fun List<NoiseFitting>.extractSpikes(shift: Boolean = false): List<Point> = flatMap { it.extractSpikes(shift) }
 
 fun LayerCollectorContext.visualize(
     fittedSegments: List<NoiseFitting>,

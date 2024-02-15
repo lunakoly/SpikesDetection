@@ -1,5 +1,7 @@
 package lunakoly.spikesdetection.util
 
+import org.jetbrains.kotlinx.kandy.dsl.categorical
+import org.jetbrains.kotlinx.kandy.letsplot.layers.context.aes.WithColor
 import org.jetbrains.kotlinx.kandy.util.color.Color
 import kotlin.math.PI
 import kotlin.math.abs
@@ -44,4 +46,35 @@ class RandomColorProvider(private val stepAngle: Double = DIAMETER_STEP_ANGLE) {
     private var index = 0
 
     fun nextColor() = hsl((stepAngle * index++).mod(360.0))
+}
+
+class NameToColorMapper {
+    private val names = mutableListOf<String>()
+    private val colors = mutableListOf<Color>()
+
+    private fun <T> nameColumnFor(points: List<T>, name: String): List<String> = List(points.size) { name }
+
+    fun assign(name: String) = ColorName(name, this)
+
+    fun <T> WithColor.configureColorFor(points: List<T>, name: String, color: Color) {
+        if (name !in names) {
+            names.add(name)
+            colors.add(color)
+        }
+
+        color(nameColumnFor(points, name)) {
+            scale = categorical(colors, names)
+        }
+    }
+}
+
+class ColorName(
+    private val name: String,
+    private val nameToColorMapper: NameToColorMapper,
+) {
+    fun <T> configureFor(points: List<T>, color: Color, context: WithColor) {
+        with (nameToColorMapper) {
+            context.configureColorFor(points, name, color)
+        }
+    }
 }

@@ -4,8 +4,8 @@ import lunakoly.spikesdetection.data.Point
 import lunakoly.spikesdetection.fitting.median.MedianFitting
 
 inline fun List<Point>.fitNoise(
-    calculateDeviation: (MedianFitting) -> Double,
     fit: (List<Point>) -> MedianFitting,
+    calculateDeviation: (MedianFitting) -> Double,
 ): NoiseFitting {
     require(size >= 3) { "The list contains too few points" }
     val fitting = fit(this)

@@ -1,5 +1,6 @@
 package lunakoly.spikesdetection.data
 
+import lunakoly.spikesdetection.util.ColorName
 import org.jetbrains.kotlinx.kandy.dsl.internal.LayerCollectorContext
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.letsplot.layers.points
@@ -12,18 +13,18 @@ fun List<Point>.median(): Point {
     return sortedBy { it.y }[size / 2]
 }
 
-fun LayerCollectorContext.visualizePoints(points: List<Point>, color: Color) {
+fun LayerCollectorContext.visualizePoints(points: List<Point>, color: Color, name: ColorName? = null) {
     points {
         x(points.map { it.x })
         y(points.map { it.y })
-        this.color = color
+        name?.configureFor(points, color, this) ?: run { this.color = color }
     }
 }
 
-fun LayerCollectorContext.visualizeLine(points: List<Point>, color: Color) {
+fun LayerCollectorContext.visualizeLine(points: List<Point>, color: Color, name: ColorName? = null) {
     line {
         x(points.map { it.x })
         y(points.map { it.y })
-        this.color = color
+        name?.configureFor(points, color, this) ?: run { this.color = color }
     }
 }
