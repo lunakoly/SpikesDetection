@@ -25,26 +25,24 @@ fun main(args: Array<String>) {
     }
 
     val deviation = when (options.deviation) {
-        "fake" -> List<Point>::calculateFakeSigmaDeviation
-        "binary" -> List<Point>::calculateSigmaViaBinarySearchDeviation
-        else -> return println("Error > `${options.deviation}` is not a supported deviation calculation method")
+        InputOptions.Deviation.FAKE -> List<Point>::calculateFakeSigmaDeviation
+        InputOptions.Deviation.BINARY -> List<Point>::calculateSigmaViaBinarySearchDeviation
     }
 
     val deviationScalar = options.deviationScalar?.toDouble() ?: when (options.deviation) {
-        "fake" -> when (options.fitting) {
-            "constant" -> 12.0
-            "linear" -> 14.0
-            else -> return println("Error > `${options.fitting}` is not a supported fitting method")
+        InputOptions.Deviation.FAKE -> when (options.fitting) {
+            InputOptions.Fitting.CONSTANT -> 12.0
+            InputOptions.Fitting.LINEAR -> 14.0
         }
-        "binary" -> 4.0
-        else -> return println("Error > `${options.deviation}` is not a supported deviation calculation method")
+        InputOptions.Deviation.BINARY -> 4.0
     }
 
     val fitting = when (options.fitting) {
-        "constant" -> List<Point>::fitConstant
-        "linear" -> List<Point>::fitLinear
-        else -> return println("Error > `${options.fitting}` is not a supported fitting method")
+        InputOptions.Fitting.CONSTANT -> List<Point>::fitConstant
+        InputOptions.Fitting.LINEAR -> List<Point>::fitLinear
     }
+
+    println(options.fitting)
 
     val inputData = options.inputFiles.map(::File)
         .flatMap {

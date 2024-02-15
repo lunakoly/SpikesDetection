@@ -1,14 +1,14 @@
 package lunakoly.spikesdetection
 
-import lunakoly.arrrgh.Options
-import lunakoly.arrrgh.list
-import lunakoly.arrrgh.optionalString
-import lunakoly.arrrgh.requiredString
+import lunakoly.arrrgh.*
 
 class InputOptions : Options() {
     val inputFiles by list("--in")
     val outputFile by requiredString("--out")
-    val fitting by requiredString("--fitting", "linear")
-    val deviation by requiredString("--deviation", "binary")
+    val fitting by requiredEnum("--fitting", Fitting.LINEAR)
+    val deviation by requiredEnum("--deviation", Deviation.BINARY)
     val deviationScalar by optionalString("--deviation-scalar")
+
+    enum class Fitting { CONSTANT, LINEAR }
+    enum class Deviation { FAKE, BINARY }
 }
