@@ -1,4 +1,4 @@
-package lunakoly.frequencies.data
+package lunakoly.spikesdetection.data
 
 import org.jetbrains.kotlinx.kandy.dsl.internal.LayerCollectorContext
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line

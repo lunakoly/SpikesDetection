@@ -1,4 +1,4 @@
-package lunakoly.frequencies.data
+package lunakoly.spikesdetection.data
 
 data class DataFile(
     val header: MutableMap<String, String>,

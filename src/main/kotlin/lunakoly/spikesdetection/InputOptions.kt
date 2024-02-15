@@ -1,4 +1,4 @@
-package lunakoly.frequencies
+package lunakoly.spikesdetection
 
 import lunakoly.arrrgh.Options
 import lunakoly.arrrgh.list

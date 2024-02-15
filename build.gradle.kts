@@ -3,11 +3,11 @@ plugins {
     application
 }
 
-group = "lunakoly.frequencies"
+group = "lunakoly.spikesdetection"
 version = "1.0.0"
 
 application {
-    mainClass.set("lunakoly.frequencies.MainKt")
+    mainClass.set("lunakoly.spikesdetection.MainKt")
 }
 
 dependencies {

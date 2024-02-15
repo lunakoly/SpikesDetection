@@ -1,9 +1,9 @@
-package lunakoly.frequencies.fitting
+package lunakoly.spikesdetection.fitting
 
-import lunakoly.frequencies.data.Point
-import lunakoly.frequencies.data.visualizeLine
-import lunakoly.frequencies.fitting.median.MedianFitting
-import lunakoly.frequencies.util.withEach
+import lunakoly.spikesdetection.data.Point
+import lunakoly.spikesdetection.data.visualizeLine
+import lunakoly.spikesdetection.fitting.median.MedianFitting
+import lunakoly.spikesdetection.util.withEach
 import org.jetbrains.kotlinx.kandy.dsl.internal.LayerCollectorContext
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color

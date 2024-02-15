@@ -1,4 +1,4 @@
-package lunakoly.frequencies.util
+package lunakoly.spikesdetection.util
 
 import org.jetbrains.kotlinx.kandy.util.color.Color
 import kotlin.math.PI

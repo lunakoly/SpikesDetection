@@ -1,4 +1,4 @@
-rootProject.name = "FrequencyProcessing"
+rootProject.name = "SpikesDetection"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

@@ -1,7 +1,7 @@
-package lunakoly.frequencies.fitting.deviations
+package lunakoly.spikesdetection.fitting.deviations
 
-import lunakoly.frequencies.data.Point
-import lunakoly.frequencies.fitting.median.MedianFitting
+import lunakoly.spikesdetection.data.Point
+import lunakoly.spikesdetection.fitting.median.MedianFitting
 import kotlin.math.pow
 import kotlin.math.sqrt
 

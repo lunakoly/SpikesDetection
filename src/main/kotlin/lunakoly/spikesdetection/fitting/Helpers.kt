@@ -1,7 +1,7 @@
-package lunakoly.frequencies.fitting
+package lunakoly.spikesdetection.fitting
 
-import lunakoly.frequencies.data.Point
-import lunakoly.frequencies.fitting.median.MedianFitting
+import lunakoly.spikesdetection.data.Point
+import lunakoly.spikesdetection.fitting.median.MedianFitting
 
 inline fun List<Point>.fitNoise(
     calculateDeviation: (MedianFitting) -> Double,

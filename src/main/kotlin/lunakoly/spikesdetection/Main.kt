@@ -1,14 +1,14 @@
-package lunakoly.frequencies
+package lunakoly.spikesdetection
 
 import lunakoly.arrrgh.fillFrom
-import lunakoly.frequencies.util.RandomColorProvider.Companion.DIAMETER_STEP_ANGLE
-import lunakoly.frequencies.data.*
-import lunakoly.frequencies.fitting.*
-import lunakoly.frequencies.fitting.deviations.calculateFakeSigmaDeviation
-import lunakoly.frequencies.fitting.deviations.calculateSigmaViaBinarySearchDeviation
-import lunakoly.frequencies.fitting.median.fitConstant
-import lunakoly.frequencies.fitting.median.fitLinear
-import lunakoly.frequencies.util.RandomColorProvider
+import lunakoly.spikesdetection.util.RandomColorProvider.Companion.DIAMETER_STEP_ANGLE
+import lunakoly.spikesdetection.data.*
+import lunakoly.spikesdetection.fitting.*
+import lunakoly.spikesdetection.fitting.deviations.calculateFakeSigmaDeviation
+import lunakoly.spikesdetection.fitting.deviations.calculateSigmaViaBinarySearchDeviation
+import lunakoly.spikesdetection.fitting.median.fitConstant
+import lunakoly.spikesdetection.fitting.median.fitLinear
+import lunakoly.spikesdetection.util.RandomColorProvider
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.save
