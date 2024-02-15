@@ -9,13 +9,12 @@ import lunakoly.spikesdetection.fitting.deviations.calculateSigmaViaBinarySearch
 import lunakoly.spikesdetection.fitting.median.fitConstant
 import lunakoly.spikesdetection.fitting.median.fitLinear
 import lunakoly.spikesdetection.util.RandomColorProvider
+import lunakoly.spikesdetection.util.div
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.save
 import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import java.io.File
-
-operator fun String.div(other: String) = "$this${File.separator}$other"
 
 fun main(args: Array<String>) {
     val options = InputOptions().fillFrom(args) ?: return
