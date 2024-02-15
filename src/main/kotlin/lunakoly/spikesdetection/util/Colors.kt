@@ -64,7 +64,7 @@ class NameToColorMapper {
             colors.add(color)
         }
 
-        color(nameColumnFor(points, name)) {
+        color(nameColumnFor(points, name), "Color") {
             scale = categorical(colors, names)
         }
     }

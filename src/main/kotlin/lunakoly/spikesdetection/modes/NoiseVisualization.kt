@@ -27,6 +27,8 @@ fun visualizeNoise(options: InputOptions) {
         return println("Error > Specifying the deviation scalar is not supported in `${options.mode}` mode")
     }
 
+    val bellSigma = options.bellSigma.toDouble()
+
     val fitting = when (options.fitting) {
         InputOptions.Fitting.CONSTANT -> List<Point>::fitConstant
         InputOptions.Fitting.LINEAR -> List<Point>::fitLinear
@@ -56,7 +58,7 @@ fun visualizeNoise(options: InputOptions) {
         println("=> Analysing graph ${file.path}")
 
         plot {
-            fitAndVisualizeNoise(data, fitting)
+            fitAndVisualizeNoise(data, fitting, bellSigma)
             layout.size = 1920 to 1080
         }.save(options.outputFile / file.name + "$suffix.png")
     }
@@ -67,14 +69,17 @@ fun visualizeNoise(options: InputOptions) {
 fun DataFramePlotContext<*>.fitAndVisualizeNoise(
     data: DataFile,
     fitting: KFunction1<List<Point>, MedianFitting>,
+    bellSigma: Double,
 ) {
     val colorProvider = RandomColorProvider.optimizedFor(4)
     val mapper = NameToColorMapper()
 
     val medianFitting = fitting(data.points)
-    val noiseGraph = data.points.buildNoiseGraph(medianFitting)
+    val noiseGraph = data.points.buildNoiseGraph(medianFitting, bellSigma = bellSigma)
     visualizeLine(noiseGraph, colorProvider.nextColor(), mapper.assign("Noise Approximation"))
-    visualizePoints(data.points.map { (x, y) -> Point(y - medianFitting.medianAt(x), 0.0) }, colorProvider.nextColor(), mapper.assign("Real points"))
+
+    val realPoints = data.points.map { (x, y) -> Point(y - medianFitting.medianAt(x), 0.0) }
+    visualizePoints(realPoints, colorProvider.nextColor(), mapper.assign("Real points"))
 
     val fakeSigma = data.points.calculateFakeSigmaDeviation(medianFitting, scalar = 4.0)
     val fakeSigmaGraph = buildNormalDistributionGraphOnTopOf(noiseGraph, fakeSigma)

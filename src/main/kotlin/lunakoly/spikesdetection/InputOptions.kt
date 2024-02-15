@@ -9,6 +9,7 @@ class InputOptions : Options() {
     val fitting by requiredEnum("--fitting", Fitting.LINEAR)
     val deviation by requiredEnum("--deviation", Deviation.BINARY)
     val deviationScalar by optionalString("--deviation-scalar")
+    val bellSigma by requiredString("--bell", "5.0")
 
     enum class Fitting { CONSTANT, LINEAR }
     enum class Deviation { FAKE, BINARY }
