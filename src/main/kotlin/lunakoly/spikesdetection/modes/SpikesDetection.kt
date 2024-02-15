@@ -79,7 +79,7 @@ inline fun DataFramePlotContext<*>.fitAndVisualize(
     data: DataFile,
     fit: (List<Point>) -> NoiseFitting,
 ) {
-    val colorProvider = RandomColorProvider(3.0 / 5 * RandomColorProvider.DIAMETER_STEP_ANGLE)
+    val colorProvider = RandomColorProvider.optimizedFor(3)
     visualizeLine(data.points, colorProvider.nextColor())
     val fitting = data.points.fitBySegmentsDynamically(fit = fit)
     visualize(fitting, colorProvider.nextColor(), colorProvider.nextColor(), colorProvider.nextColor())

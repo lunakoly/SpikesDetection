@@ -41,6 +41,8 @@ private fun hsl(h: Double, s: Double = 1.0, l: Double = 0.5): Color {
 class RandomColorProvider(private val stepAngle: Double = DIAMETER_STEP_ANGLE) {
     companion object {
         const val DIAMETER_STEP_ANGLE = 2 / PI * 180
+
+        fun optimizedFor(count: Int) = RandomColorProvider(DIAMETER_STEP_ANGLE * 3.0 / count)
     }
 
     private var index = 0

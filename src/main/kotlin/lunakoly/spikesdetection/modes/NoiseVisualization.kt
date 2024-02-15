@@ -68,7 +68,7 @@ fun DataFramePlotContext<*>.fitAndVisualizeNoise(
     data: DataFile,
     fitting: KFunction1<List<Point>, MedianFitting>,
 ) {
-    val colorProvider = RandomColorProvider(3.0 / 5 * RandomColorProvider.DIAMETER_STEP_ANGLE)
+    val colorProvider = RandomColorProvider.optimizedFor(4)
     val mapper = NameToColorMapper()
 
     val medianFitting = fitting(data.points)
