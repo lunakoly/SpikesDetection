@@ -9,11 +9,7 @@ import lunakoly.spikesdetection.fitting.median.MedianFitting
 import lunakoly.spikesdetection.fitting.median.fitConstant
 import lunakoly.spikesdetection.fitting.median.fitLinear
 import lunakoly.spikesdetection.util.RandomColorProvider
-import lunakoly.spikesdetection.util.div
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
-import org.jetbrains.kotlinx.kandy.dsl.plot
-import org.jetbrains.kotlinx.kandy.letsplot.export.save
-import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import java.io.File
 
 fun detectSpikes(options: InputOptions) {
@@ -41,41 +37,13 @@ fun detectSpikes(options: InputOptions) {
         InputOptions.Fitting.LINEAR -> List<Point>::fitLinear
     }
 
-    val inputData = options.inputFiles.map(::File)
-        .flatMap {
-            if (it.isDirectory) {
-                it.listFiles()?.toList().orEmpty()
-            } else {
-                listOf(it)
+    transformFilesToOutput(options.inputFiles, options.outputFile) { data ->
+        fitAndVisualize(data) { points ->
+            points.fitNoise(fitting) { medianFitting  ->
+                deviation(points, medianFitting)
             }
         }
-        .map {
-            println("=> Parsing file ${it.path}")
-            parseDataFile(it.readText()) to it
-        }
-
-    val filesIndices = mutableMapOf<String, Int>()
-
-    for ((data, file) in inputData) {
-        val index = filesIndices[file.name]
-        val suffix = index?.let { ".$index" } ?: ""
-        val nextIndex = (index ?: 1) + 1
-        filesIndices[file.name] = nextIndex
-
-        println("=> Analysing graph ${file.path}")
-
-        plot {
-            fitAndVisualize(data) { points ->
-                points.fitNoise(fitting) { medianFitting  ->
-                    deviation(points, medianFitting)
-                }
-            }
-
-            layout.size = 1920 to 1080
-        }.save(options.outputFile / file.name + "$suffix.png")
     }
-
-    println("Done!")
 }
 
 inline fun DataFramePlotContext<*>.fitAndVisualize(

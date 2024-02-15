@@ -8,11 +8,7 @@ import lunakoly.spikesdetection.fitting.deviations.calculateSigmaViaBinarySearch
 import lunakoly.spikesdetection.fitting.median.*
 import lunakoly.spikesdetection.util.NameToColorMapper
 import lunakoly.spikesdetection.util.RandomColorProvider
-import lunakoly.spikesdetection.util.div
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
-import org.jetbrains.kotlinx.kandy.dsl.plot
-import org.jetbrains.kotlinx.kandy.letsplot.export.save
-import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import java.io.File
 import kotlin.math.exp
 import kotlin.math.pow
@@ -34,36 +30,9 @@ fun visualizeNoise(options: InputOptions) {
         InputOptions.Fitting.LINEAR -> List<Point>::fitLinear
     }
 
-    val inputData = options.inputFiles.map(::File)
-        .flatMap {
-            if (it.isDirectory) {
-                it.listFiles()?.toList().orEmpty()
-            } else {
-                listOf(it)
-            }
-        }
-        .map {
-            println("=> Parsing file ${it.path}")
-            parseDataFile(it.readText()) to it
-        }
-
-    val filesIndices = mutableMapOf<String, Int>()
-
-    for ((data, file) in inputData) {
-        val index = filesIndices[file.name]
-        val suffix = index?.let { ".$index" } ?: ""
-        val nextIndex = (index ?: 1) + 1
-        filesIndices[file.name] = nextIndex
-
-        println("=> Analysing graph ${file.path}")
-
-        plot {
-            fitAndVisualizeNoise(data, fitting, bellSigma)
-            layout.size = 1920 to 1080
-        }.save(options.outputFile / file.name + "$suffix.png")
+    transformFilesToOutput(options.inputFiles, options.outputFile) { data ->
+        fitAndVisualizeNoise(data, fitting, bellSigma)
     }
-
-    println("Done!")
 }
 
 fun DataFramePlotContext<*>.fitAndVisualizeNoise(
