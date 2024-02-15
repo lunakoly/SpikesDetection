@@ -1,9 +1,14 @@
 package lunakoly.frequencies
 
 import lunakoly.arrrgh.fillFrom
-import lunakoly.frequencies.RandomColorProvider.Companion.DIAMETER_STEP_ANGLE
+import lunakoly.frequencies.util.RandomColorProvider.Companion.DIAMETER_STEP_ANGLE
 import lunakoly.frequencies.data.*
-import lunakoly.frequencies.filtering.*
+import lunakoly.frequencies.fitting.*
+import lunakoly.frequencies.fitting.deviations.calculateFakeSigmaDeviation
+import lunakoly.frequencies.fitting.deviations.calculateSigmaViaBinarySearchDeviation
+import lunakoly.frequencies.fitting.median.fitConstant
+import lunakoly.frequencies.fitting.median.fitLinear
+import lunakoly.frequencies.util.RandomColorProvider
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.save
@@ -20,8 +25,24 @@ fun main(args: Array<String>) {
         return
     }
 
+    val deviation = when (options.deviation) {
+        "fake" -> List<Point>::calculateFakeSigmaDeviation
+        "binary" -> List<Point>::calculateSigmaViaBinarySearchDeviation
+        else -> return println("Error > `${options.deviation}` is not a supported deviation calculation method")
+    }
+
+    val deviationScalar = options.deviationScalar?.toDouble() ?: when (options.deviation) {
+        "fake" -> when (options.fitting) {
+            "constant" -> 12.0
+            "linear" -> 14.0
+            else -> return println("Error > `${options.fitting}` is not a supported fitting method")
+        }
+        "binary" -> 4.0
+        else -> return println("Error > `${options.deviation}` is not a supported deviation calculation method")
+    }
+
     val fitting = when (options.fitting) {
-        "median" -> List<Point>::fitMedian
+        "constant" -> List<Point>::fitConstant
         "linear" -> List<Point>::fitLinear
         else -> return println("Error > `${options.fitting}` is not a supported fitting method")
     }
@@ -50,7 +71,11 @@ fun main(args: Array<String>) {
         println("=> Analysing graph ${file.path}")
 
         plot {
-            fitAndVisualize(data, fitting)
+            fitAndVisualize(data) { points ->
+                fitting(points) { medianFitting  ->
+                    deviation(points, medianFitting, deviationScalar)
+                }
+            }
             layout.size = 1920 to 1080
         }.save(options.outputFile / file.name + "$suffix.png")
     }
@@ -58,9 +83,9 @@ fun main(args: Array<String>) {
     println("Done!")
 }
 
-inline fun <F : Fitting> DataFramePlotContext<*>.fitAndVisualize(
+inline fun DataFramePlotContext<*>.fitAndVisualize(
     data: DataFile,
-    fit: (List<Point>) -> F,
+    fit: (List<Point>) -> NoiseFitting,
 ) {
     val colorProvider = RandomColorProvider(3.0 / 5 * DIAMETER_STEP_ANGLE)
     visualizeLine(data.points, colorProvider.nextColor())

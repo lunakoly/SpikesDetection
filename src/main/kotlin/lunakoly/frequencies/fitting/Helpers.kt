@@ -1,6 +1,17 @@
-package lunakoly.frequencies.filtering
+package lunakoly.frequencies.fitting
 
 import lunakoly.frequencies.data.Point
+import lunakoly.frequencies.fitting.median.MedianFitting
+
+inline fun List<Point>.fitNoise(
+    calculateDeviation: (MedianFitting) -> Double,
+    fit: (List<Point>) -> MedianFitting,
+): NoiseFitting {
+    require(size >= 3) { "The list contains too few points" }
+    val fitting = fit(this)
+    val deviation = calculateDeviation(fitting)
+    return NoiseFitting(fitting, deviation, this)
+}
 
 fun <T> List<T>.splitByEqualSegments(count: Int): List<List<T>> {
     val result = mutableListOf<MutableList<T>>()
@@ -19,15 +30,15 @@ fun <T> List<T>.splitByEqualSegments(count: Int): List<List<T>> {
     return result
 }
 
-fun List<Fitting>.averageDeviation(): Double {
+fun List<NoiseFitting>.averageDeviation(): Double {
     require(isNotEmpty()) { "The list contains too few points" }
     return sumOf { it.deviation } / size
 }
 
-inline fun <F : Fitting> List<Point>.fitBySegmentsDynamically(
+inline fun List<Point>.fitBySegmentsDynamically(
     threshold: Double = 0.05,
-    fit: (List<Point>) -> F,
-): List<F> {
+    fit: (List<Point>) -> NoiseFitting,
+): List<NoiseFitting> {
     var fittedSegments = splitByEqualSegments(1).map(fit)
     var deviation = fittedSegments.averageDeviation()
     var count = 2

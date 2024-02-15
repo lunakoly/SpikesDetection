@@ -1,4 +1,4 @@
-package lunakoly.frequencies
+package lunakoly.frequencies.util
 
 import org.jetbrains.kotlinx.kandy.util.color.Color
 import kotlin.math.PI
