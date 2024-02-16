@@ -37,7 +37,7 @@ fun detectSpikes(options: InputOptions) {
         InputOptions.Fitting.LINEAR -> List<Point>::fitLinear
     }
 
-    transformFilesToOutput(options.inputFiles, options.outputFile) { data ->
+    transformFilesToOutput(options.inputFiles, options.outputFile, options.pathPrefix) { data ->
         fitAndVisualize(data) { points ->
             points.fitNoise(fitting) { medianFitting  ->
                 deviation(points, medianFitting)

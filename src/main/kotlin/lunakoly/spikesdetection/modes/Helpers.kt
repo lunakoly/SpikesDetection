@@ -12,6 +12,7 @@ import java.io.File
 inline fun transformFilesToOutput(
     inputFiles: List<String>,
     outputFile: String,
+    pathPrefix: String?,
     analyseGraph: DataFramePlotContext<*>.(DataFile) -> Unit,
 ) {
     val inputData = inputFiles.map(::File)
@@ -30,18 +31,23 @@ inline fun transformFilesToOutput(
     val filesIndices = mutableMapOf<String, Int>()
 
     for ((data, file) in inputData) {
-        val index = filesIndices[file.name]
+        val newFileName = pathPrefix
+            ?.let { file.path.removePrefix(it) }
+            ?.removePrefix(File.separator)
+            ?.replace(File.separator, "-")
+            ?: ""
+
+        val index = filesIndices[newFileName]
         val suffix = index?.let { ".$index" } ?: ""
-        val marker = index?.let { " [$index]" } ?: ""
 
         val nextIndex = (index ?: 1) + 1
-        filesIndices[file.name] = nextIndex
+        filesIndices[newFileName] = nextIndex
 
-        println("=> Analysing graph ${file.path}$marker")
+        println("=> Rendering $newFileName")
 
         plot {
             analyseGraph(data)
             layout.size = 1920 to 1080
-        }.save(outputFile / file.name + "$suffix.png")
+        }.save(outputFile / newFileName + "$suffix.png")
     }
 }

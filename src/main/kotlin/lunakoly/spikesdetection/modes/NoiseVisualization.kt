@@ -30,7 +30,7 @@ fun visualizeNoise(options: InputOptions) {
         InputOptions.Fitting.LINEAR -> List<Point>::fitLinear
     }
 
-    transformFilesToOutput(options.inputFiles, options.outputFile) { data ->
+    transformFilesToOutput(options.inputFiles, options.outputFile, options.pathPrefix) { data ->
         fitAndVisualizeNoise(data, fitting, bellSigma)
     }
 }
