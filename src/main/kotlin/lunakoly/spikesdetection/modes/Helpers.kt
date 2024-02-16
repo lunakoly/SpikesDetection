@@ -9,34 +9,29 @@ import org.jetbrains.kotlinx.kandy.letsplot.export.save
 import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import java.io.File
 
+fun parseDataFilesIn(files: List<File>): Map<File, DataFile> = files
+    .flatMap {
+        if (it.isDirectory) {
+            it.listFiles()?.toList().orEmpty()
+        } else {
+            listOf(it)
+        }
+    }.associateWith {
+        println("=> Parsing file ${it.path}")
+        parseDataFile(it.readText())
+    }
+
 inline fun transformFilesToOutput(
     inputFiles: List<String>,
     outputFile: String,
     pathPrefix: String?,
     analyseGraph: DataFramePlotContext<*>.(DataFile) -> Unit,
 ) {
-    val inputData = inputFiles.map(::File)
-        .flatMap {
-            if (it.isDirectory) {
-                it.listFiles()?.toList().orEmpty()
-            } else {
-                listOf(it)
-            }
-        }
-        .map {
-            println("=> Parsing file ${it.path}")
-            parseDataFile(it.readText()) to it
-        }
-
+    val inputData = parseDataFilesIn(inputFiles.map(::File))
     val filesIndices = mutableMapOf<String, Int>()
 
-    for ((data, file) in inputData) {
-        val newFileName = pathPrefix
-            ?.let { file.path.removePrefix(it) }
-            ?.removePrefix(File.separator)
-            ?.replace(File.separator, "-")
-            ?: ""
-
+    for ((file, data) in inputData) {
+        val newFileName = file.nameWrtPrefix(pathPrefix)
         val index = filesIndices[newFileName]
         val suffix = index?.let { ".$index" } ?: ""
 
@@ -51,3 +46,9 @@ inline fun transformFilesToOutput(
         }.save(outputFile / newFileName + "$suffix.png")
     }
 }
+
+fun File.nameWrtPrefix(pathPrefix: String?): String = pathPrefix
+    ?.let { path.removePrefix(it) }
+    ?.removePrefix(File.separator)
+    ?.replace(File.separator, "-")
+    ?: name

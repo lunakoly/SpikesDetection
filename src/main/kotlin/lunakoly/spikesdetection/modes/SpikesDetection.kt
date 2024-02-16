@@ -54,6 +54,6 @@ inline fun DataFramePlotContext<*>.fitAndVisualize(
     visualizeLine(data.points, colorProvider.nextColor())
     val fitting = data.points.fitBySegmentsDynamically(fit = fit)
     visualize(fitting, colorProvider.nextColor(), colorProvider.nextColor(), colorProvider.nextColor())
-    val spikes = fitting.extractSpikes(shift = false)
+    val spikes = fitting.extractSpikes(shift = false).removeZeros()
     visualizePoints(spikes, colorProvider.nextColor())
 }

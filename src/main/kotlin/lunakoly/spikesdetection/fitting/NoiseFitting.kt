@@ -8,6 +8,7 @@ import org.jetbrains.kotlinx.kandy.dsl.internal.LayerCollectorContext
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color
 import kotlin.math.abs
+import kotlin.math.sign
 
 class NoiseFitting(
     val medianFitting: MedianFitting,
@@ -43,15 +44,23 @@ class NoiseFitting(
 }
 
 fun NoiseFitting.extractSpikes(shift: Boolean = false): List<Point> {
-    val filtered = points.filter { (x, y) -> abs(y - medianFitting.medianAt(x)) > deviation }
+    return points.map { point ->
+        val median = medianFitting.medianAt(point.x)
+        val delta = point.y - median
 
-    return when {
-        shift -> filtered.map { (x, y) -> Point(x, y - medianFitting.medianAt(x)) }
-        else -> filtered
+        if (abs(delta) <= deviation) {
+            Point(point.x, 0.0)
+        } else if (shift) {
+            Point(point.x, point.y - median * delta.sign)
+        } else {
+            point
+        }
     }
 }
 
 fun List<NoiseFitting>.extractSpikes(shift: Boolean = false): List<Point> = flatMap { it.extractSpikes(shift) }
+
+fun List<Point>.removeZeros(): List<Point> = filter { it.y != 0.0 }
 
 fun LayerCollectorContext.visualize(
     fittedSegments: List<NoiseFitting>,
