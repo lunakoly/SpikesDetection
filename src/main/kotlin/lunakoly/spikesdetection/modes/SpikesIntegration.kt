@@ -54,6 +54,8 @@ fun integrateSpikes(options: InputOptions) {
     val mapper = NameToColorMapper()
 
     plot {
+        val resultingTable = mutableListOf(mutableListOf<String>())
+
         for (folder in inputDirectories) {
             val graph = integrate(folder) { points ->
                 points.fitNoise(fitting) { medianFitting  ->
@@ -63,7 +65,28 @@ fun integrateSpikes(options: InputOptions) {
 
             val graphName = folder.nameWrtPrefix(options.pathPrefix)
             visualizePoints(graph, colorProvider.nextColor(), mapper.assign(graphName))
+
+            val previousColumnsCount = resultingTable.first().size
+            val newRowsCount = graph.size - (resultingTable.size - 1)
+
+            for (it in 0 until newRowsCount) {
+                resultingTable += MutableList(previousColumnsCount) { "" }
+            }
+
+            resultingTable.first() += listOf(graphName, "")
+
+            for (it in graph.indices) {
+                resultingTable[it + 1] += listOf(graph[it].x.toString(), graph[it].y.toString())
+            }
+
+            for (it in graph.size until resultingTable.size - 1) {
+                resultingTable[it + 1] += listOf("", "")
+            }
         }
+
+        File(options.outputFile / "integration-data.csv").writeText(
+            resultingTable.joinToString("\n") { it.joinToString(",") }
+        )
     }.save(options.outputFile / "integration.png")
 }
 
@@ -80,7 +103,7 @@ inline fun integrate(folder: File, fit: (List<Point>) -> NoiseFitting): List<Poi
         graph.add(Point(current, integral))
     }
 
-    return graph
+    return graph.sortedBy { it.x }
 }
 
 fun List<Point>.integrate(): Double {
