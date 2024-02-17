@@ -28,6 +28,11 @@ If an optional `--path-prefix` is specified, file names get prepended with a por
 the value of this option and their names with `-` in place of the path separator.
 In the example above they would be `folder1-subfolder1-file.asc.png`, ...
 
+Spikes detection is done by splitting the graph into some "optimal" number of segments,
+each is then analyzed according to the selected `--fitting` and `--deviation` [methods](#Additional-Parameters).
+The number of segments is iteratively increased until the noise deviation estimate starts improving slower than by 10%
+per step.
+
 Also see [Additional Parameters](#Additional-Parameters) to learn more about other options.
 
 ### Visualize Noise
@@ -44,6 +49,9 @@ java -jar SpikesDetection.jar \
 ```
 
 The options mentioned above work the same way as they do in [Visualize Spikes Detection](#Visualize-Spikes-Detection).
+
+During noise deviation, the graph is not splitted into segments, to avoid generating multiple noise graphs.
+It's assumed this nuance is not crucial in determining the optimal value of the `--bell` parameter.
 
 Also see [Additional Parameters](#Additional-Parameters) to learn more about other options.
 
@@ -69,6 +77,7 @@ is the result of numeric integration of the spikes within the corresponding file
 
 Integration is done by summing trapezoids' areas formed by adjacent values.
 During integration, the expected function value is subtracted from the spikes.
+During integration mode, the graph is split into segments the same way [it is for Spikes Detection](#Spikes-Detection).
 
 Note that if there are multiple `--in`s with the same final `/subfilder` and there's no `--path-prefix` to help
 avoiding clashes, then `integration.png` will miss all but 1 clashing datasets.
