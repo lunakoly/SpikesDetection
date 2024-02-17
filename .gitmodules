@@ -1,0 +1,3 @@
+[submodule "arrrgh"]
+	path = arrrgh
+	url = git@github.com:lunakoly/ArrrghForKotlin.git
