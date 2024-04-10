@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 }
 
 include(":arrrgh")
+include(":color-tools")

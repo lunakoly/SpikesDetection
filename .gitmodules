@@ -1,3 +1,6 @@
 [submodule "arrrgh"]
 	path = arrrgh
 	url = git@github.com:lunakoly/ArrrghForKotlin.git
+[submodule "color-tools"]
+	path = color-tools
+	url = git@github.com:lunakoly/ColorTools.git

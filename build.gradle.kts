@@ -15,6 +15,7 @@ dependencies {
     runtimeOnly(libs.slf4j.nop)
 
     implementation(project(":arrrgh"))
+    implementation(project(":color-tools"))
     testImplementation(libs.kotlin.test.junit)
 }
 

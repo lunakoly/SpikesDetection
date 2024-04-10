@@ -13,7 +13,7 @@ import lunakoly.spikesdetection.fitting.median.MedianFitting
 import lunakoly.spikesdetection.fitting.median.fitConstant
 import lunakoly.spikesdetection.fitting.median.fitLinear
 import lunakoly.spikesdetection.util.NameToColorMapper
-import lunakoly.spikesdetection.util.RandomColorProvider
+import lunakoly.spikesdetection.util.createColorIterator
 import lunakoly.spikesdetection.util.div
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.save
@@ -50,7 +50,7 @@ fun integrateSpikes(options: InputOptions) {
         return println("Error > ${inputFiles.joinToString(", ") { "`$it`" }} - are not directories")
     }
 
-    val colorProvider = RandomColorProvider.optimizedFor(6)
+    val colorProvider = createColorIterator(6)
     val mapper = NameToColorMapper()
 
     plot {
@@ -64,7 +64,7 @@ fun integrateSpikes(options: InputOptions) {
             }
 
             val graphName = folder.nameWrtPrefix(options.pathPrefix)
-            visualizePoints(graph, colorProvider.nextColor(), mapper.assign(graphName))
+            visualizePoints(graph, colorProvider.next(), mapper.assign(graphName))
 
             val previousColumnsCount = resultingTable.first().size
             val newRowsCount = graph.size - (resultingTable.size - 1)

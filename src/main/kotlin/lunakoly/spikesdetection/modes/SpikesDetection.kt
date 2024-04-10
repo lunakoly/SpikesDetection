@@ -8,7 +8,7 @@ import lunakoly.spikesdetection.fitting.deviations.calculateSigmaViaBinarySearch
 import lunakoly.spikesdetection.fitting.median.MedianFitting
 import lunakoly.spikesdetection.fitting.median.fitConstant
 import lunakoly.spikesdetection.fitting.median.fitLinear
-import lunakoly.spikesdetection.util.RandomColorProvider
+import lunakoly.spikesdetection.util.createColorIterator
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
 import java.io.File
 
@@ -50,10 +50,10 @@ inline fun DataFramePlotContext<*>.fitAndVisualize(
     data: DataFile,
     fit: (List<Point>) -> NoiseFitting,
 ) {
-    val colorProvider = RandomColorProvider.optimizedFor(5)
-    visualizeLine(data.points, colorProvider.nextColor())
+    val colorProvider = createColorIterator(5)
+    visualizeLine(data.points, colorProvider.next())
     val fitting = data.points.fitBySegmentsDynamically(fit = fit)
-    visualize(fitting, colorProvider.nextColor(), colorProvider.nextColor(), colorProvider.nextColor())
+    visualize(fitting, colorProvider.next(), colorProvider.next(), colorProvider.next())
     val spikes = fitting.extractSpikes(shift = false).removeZeros()
-    visualizePoints(spikes, colorProvider.nextColor())
+    visualizePoints(spikes, colorProvider.next())
 }

@@ -7,7 +7,7 @@ import lunakoly.spikesdetection.fitting.deviations.calculateFakeSigmaDeviation
 import lunakoly.spikesdetection.fitting.deviations.calculateSigmaViaBinarySearchDeviation
 import lunakoly.spikesdetection.fitting.median.*
 import lunakoly.spikesdetection.util.NameToColorMapper
-import lunakoly.spikesdetection.util.RandomColorProvider
+import lunakoly.spikesdetection.util.createColorIterator
 import org.jetbrains.kotlinx.kandy.dsl.internal.DataFramePlotContext
 import java.io.File
 import kotlin.math.exp
@@ -40,23 +40,23 @@ fun DataFramePlotContext<*>.fitAndVisualizeNoise(
     fitting: KFunction1<List<Point>, MedianFitting>,
     bellSigma: Double,
 ) {
-    val colorProvider = RandomColorProvider.optimizedFor(4)
+    val colorProvider = createColorIterator(4)
     val mapper = NameToColorMapper()
 
     val medianFitting = fitting(data.points)
     val noiseGraph = data.points.buildNoiseGraph(medianFitting, bellSigma = bellSigma)
-    visualizeLine(noiseGraph, colorProvider.nextColor(), mapper.assign("Noise Approximation"))
+    visualizeLine(noiseGraph, colorProvider.next(), mapper.assign("Noise Approximation"))
 
     val realPoints = data.points.map { (x, y) -> Point(y - medianFitting.medianAt(x), 0.0) }
-    visualizePoints(realPoints, colorProvider.nextColor(), mapper.assign("Real points"))
+    visualizePoints(realPoints, colorProvider.next(), mapper.assign("Real points"))
 
     val fakeSigma = data.points.calculateFakeSigmaDeviation(medianFitting, scalar = 4.0)
     val fakeSigmaGraph = buildNormalDistributionGraphOnTopOf(noiseGraph, fakeSigma)
-    visualizeLine(fakeSigmaGraph, colorProvider.nextColor(), mapper.assign("Fake sigma"))
+    visualizeLine(fakeSigmaGraph, colorProvider.next(), mapper.assign("Fake sigma"))
 
     val binarySigma = data.points.calculateSigmaViaBinarySearchDeviation(medianFitting, scalar = 1.0)
     val binarySigmaGraph = buildNormalDistributionGraphOnTopOf(noiseGraph, binarySigma)
-    visualizeLine(binarySigmaGraph, colorProvider.nextColor(), mapper.assign("Sigma via binary search"))
+    visualizeLine(binarySigmaGraph, colorProvider.next(), mapper.assign("Sigma via binary search"))
 }
 
 fun buildNormalDistributionGraphOnTopOf(noiseGraph: List<Point>, sigma: Double): List<Point> {
